@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#172b4d">
+<title>RemoteStart | Find Your First Remote Job</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#26344a}
+header{background:#172b4d;color:white;padding:22px 18px}
+.brand{font-size:25px;font-weight:bold;color:#f5c66a}
+header p{line-height:1.5;color:#e1e8f0}
+main{max-width:850px;margin:auto;padding:18px}
+h2{font-size:20px}
+.search{width:100%;padding:15px;border:1px solid #ddd;border-radius:10px;font-size:16px}
+.categories{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.category,.job{background:white;padding:15px;border-radius:12px;border:1px solid #e5e8ef}
+.category{cursor:pointer;font-weight:bold}
+.category:active{background:#e8f1ff}
+.job{margin:12px 0}
+.job h3{margin:0 0 8px}
+.muted{color:#68758a;font-size:14px}
+.tag{display:inline-block;background:#e8f1ff;color:#2457a7;padding:5px 9px;border-radius:15px;font-size:12px}
+button{background:#2457a7;color:white;border:0;padding:10px 14px;border-radius:8px;cursor:pointer}
+button:focus,input:focus{outline:2px solid #f5c66a}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.actions a{background:#2457a7;color:white;padding:10px 14px;border-radius:8px;text-decoration:none;font-size:14px}
+.notice{background:#fff4df;padding:15px;border-radius:10px;line-height:1.5}
+footer{text-align:center;padding:25px;color:#68758a;font-size:13px}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}
+nav button{background:#e8edf5;color:#172b4d}
+nav button.active{background:#2457a7;color:white}
+@media(min-width:600px){.categories{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">✦ RemoteStart</div>
+<h1>Your first step to working remotely.</h1>
+<p>No experience? No problem. Discover opportunities, build skills and start your career.</p>
+</header>
+
+<main>
+<h2>Find your opportunity</h2>
+<input class="search" id="search" placeholder="Search jobs, skills or categories..." aria-label="Search jobs">
+
+<h2>Explore job categories</h2>
+<div class="categories">
+<div class="category" data-category="Customer Service">🎧 Customer Service</div>
+<div class="category" data-category="Data Entry">💻 Data Entry</div>
+<div class="category" data-category="Virtual Assistant">📅 Virtual Assistant</div>
+<div class="category" data-category="Online Tutoring">🎓 Online Tutoring</div>
+</div>
+
+<h2>Job opportunities</h2>
+<p class="muted">Sample listings for demonstration. These are not live vacancies.</p>
+<nav>
+<button class="active" data-filter="All">All</button>
+<button data-filter="Customer Service">Customer Service</button>
+<button data-filter="Data Entry">Data Entry</button>
+<button data-filter="Virtual Assistant">Virtual Assistant</button>
+<button data-filter="Online Tutoring">Tutoring</button>
+<button data-filter="Saved">Saved jobs</button>
+</nav>
+
+<div id="jobs"></div>
+
+<h2>New to remote work?</h2>
+<div class="notice">
+<strong>Start safely!</strong>
+<ul>
+<li>Never pay someone to guarantee you a job.</li>
+<li>Check the employer's official website.</li>
+<li>Never share passwords or banking PINs.</li>
+<li>Check whether South African applicants are accepted.</li>
+<li>Be careful with requests for identity documents.</li>
+</ul>
+</div>
+
+<h2>Build your career</h2>
+<p>Learn how to prepare a CV, improve your interview skills and find online training opportunities.</p>
+<button onclick="alert('CV and interview learning resources coming soon!')">Explore career resources</button>
+</main>
+
+<footer>
+<strong>RemoteStart</strong><br>
+Helping beginners discover remote work opportunities.<br>
+Always verify vacancies before applying.
+</footer>
+
+<script>
+const listings = [
+{id:1,title:"Customer Support Assistant",category:"Customer Service",level:"Beginner",details:"Sample role. Good communication and computer skills are useful."},
+{id:2,title:"Junior Data Entry Clerk",category:"Data Entry",level:"Beginner",details:"Sample role. Accuracy and basic spreadsheet skills are useful."},
+{id:3,title:"Virtual Assistant Trainee",category:"Virtual Assistant",level:"Beginner",details:"Sample role. Organisation, email and scheduling skills are useful."},
+{id:4,title:"Online English Tutor",category:"Online Tutoring",level:"Beginner",details:"Sample role. Check teaching and language requirements."}
+];
+
+let filter="All";
+let saved=JSON.parse(localStorage.getItem("remotestartSaved")||"[]");
+
+function render(){
+const search=document.getElementById("search").value.toLowerCase();
+const filtered=listings.filter(job=>{
+const matches=(job.title+" "+job.category+" "+job.details).toLowerCase().includes(search);
+const category=filter==="All"||job.category===filter;
+const savedOnly=filter!=="Saved"||saved.includes(job.id);
+return matches&&category&&savedOnly;
+});
+document.getElementById("jobs").innerHTML=filtered.length?filtered.map(job=>`
+<div class="job">
+<h3>${job.title}</h3>
+<span class="tag">${job.level}</span>
+<p class="muted">${job.category}</p>
+<p>${job.details}</p>
+<div class="actions">
+<button onclick="toggleSave(${job.id})">${saved.includes(job.id)?"★ Saved":"☆ Save job"}</button>
+</div>
+</div>`).join(""):"<p>No matching jobs found. Try another search.</p>";
+}
+
+function toggleSave(id){
+saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];
+localStorage.setItem("remotestartSaved",JSON.stringify(saved));
+render();
+}
+
+document.getElementById("search").addEventListener("input",render);
+document.querySelectorAll("nav button").forEach(button=>{
+button.addEventListener("click",()=>{
+filter=button.dataset.filter;
+document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+button.classList.add("active");
+render();
+});
+});
+document.querySelectorAll(".category").forEach(item=>{
+item.addEventListener("click",()=>{
+filter=item.dataset.category;
+document.querySelectorAll("nav button").forEach(b=>{
+b.classList.toggle("active",b.dataset.filter===filter);
+});
+render();
+});
+});
+render();
+</script>
+</body>
+</html>
