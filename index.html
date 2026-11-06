@@ -145,7 +145,17 @@ b.classList.toggle("active",b.dataset.filter===filter);
 render();
 });
 });
-render();
+  render();
 </script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .catch(error => console.log("Service worker error:", error));
+  });
+}
+</script>
+
 </body>
 </html>
